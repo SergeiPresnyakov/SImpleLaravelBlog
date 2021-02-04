@@ -52,7 +52,7 @@ class CategoryController extends BaseController
 
         if ($item) {
             return redirect()->route('blog.admin.categories.edit', [$item->id])
-                ->with(['success' => 'Successfuly saved']);
+                ->with(['success' => 'Successfuly sav ed']);
         } else {
             return back()->withErrors(['msg' => 'Error durin saving'])
                 ->withInput();
@@ -108,9 +108,12 @@ class CategoryController extends BaseController
             $data['slug'] = str_slug($data['title']);
         }
 
-        $result = $item
+        /* $result = $item
             ->fill($data)
-            ->save();
+            ->save(); */
+        
+        // update включает в себя fill и save
+        $result = $item->update($data);
 
         if ($result) {
             return redirect()
