@@ -13,6 +13,10 @@ use Illuminate\Support\Facades\Auth;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+
+//Route::resource('rest', 'RestTestController')->names('restTest');
+
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
@@ -37,7 +41,3 @@ Route::group($groupData, function() {
         ->only($methods)
         ->names('blog.admin.categories');
 });
-
-//Route::resource('rest', 'RestTestController')->names('restTest');
-
-
