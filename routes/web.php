@@ -17,6 +17,10 @@ use Illuminate\Support\Facades\Auth;
 
 //Route::resource('rest', 'RestTestController')->names('restTest');
 
+Route::get('/', function () {
+    return view('welcome');
+});
+
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
@@ -36,8 +40,14 @@ $groupData = [
 ];
 
 Route::group($groupData, function() {
+    // BlogCategory
     $methods = ['index', 'edit', 'store', 'update', 'create'];
     Route::resource('categories', 'CategoryController')
         ->only($methods)
         ->names('blog.admin.categories');
+    
+    // BlogPost
+    Route::resource('posts', 'PostController')
+        ->except(['show'])
+        ->names('blog.admin.posts');
 });
