@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Blog\Admin;
 
 use App\Repositories\BlogCategoryRepository;
 use App\Repositories\BlogPostRepository;
+use App\Http\Requests\BlogPostUpdateRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 /**
  * Управление статьями блога
@@ -100,13 +102,40 @@ class PostController extends BaseController
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  BlogPostUpdateRequest  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(BlogPostUpdateRequest $request, $id)
     {
-        dd(__METHOD__, $id, request()->all());
+        $item = $this->blogPostRepository->getEdit($id);
+
+        if (empty($item)) {
+            return back()
+                ->withErrors(['msg' => "Record ID = [{$id}] not found."]);
+        }
+
+        $data = $request->all();
+
+        if (empty($data['slug'])) {
+            $data['slug'] = str_slug($data['title']);
+        }
+
+        if (empty($item->published_at) && $data['is_published']) {
+            $data['published_at'] = Carbon::now();
+        }
+        
+        $result = $item->update($data);
+
+        if ($result) {
+            return redirect()
+                ->route('blog.admin.posts.edit', $item->id)
+                ->with(['success' => 'Successfuly updated.']);
+        } else {
+            return back()
+                ->withErrors(['msg' => 'Error during save.'])
+                ->withInput();
+        }
     }
 
     /**
