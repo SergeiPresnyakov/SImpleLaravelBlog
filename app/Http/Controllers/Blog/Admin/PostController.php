@@ -6,7 +6,6 @@ use App\Repositories\BlogCategoryRepository;
 use App\Repositories\BlogPostRepository;
 use App\Http\Requests\BlogPostUpdateRequest;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 
 /**
  * Управление статьями блога
@@ -116,17 +115,8 @@ class PostController extends BaseController
         }
 
         $data = $request->all();
-
-        if (empty($data['slug'])) {
-            $data['slug'] = str_slug($data['title']);
-        }
-
-        if (empty($item->published_at) && $data['is_published']) {
-            $data['published_at'] = Carbon::now();
-        }
         
         $result = $item->update($data);
-
         if ($result) {
             return redirect()
                 ->route('blog.admin.posts.edit', $item->id)
