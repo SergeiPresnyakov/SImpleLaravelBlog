@@ -12,9 +12,29 @@ class BlogCategoryObserver
      * @param  \App\Models\BlogCategory  $blogCategory
      * @return void
      */
-    public function created(BlogCategory $blogCategory)
+    public function creating(BlogCategory $blogCategory)
     {
-        //
+        $this->setSlug($blogCategory);
+    }
+
+    /**
+     * Если поле slug пусто - генерируем новый slug из title
+     * 
+     * @param \App\Models\BlogCategory $blogCategory
+     */
+    protected function setSlug(BlogCategory $blogCategory)
+    {
+        if (empty($blogCategory->slug)) {
+            $blogCategory->slug = str_slug($blogCategory->title);
+        }
+    }
+
+    /**
+     * @param \App\Models\BlogCategory $blogCategory
+     */
+    public function updating(BlogCategory $blogCategory)
+    {
+        $this->setSlug($blogCategory);
     }
 
     /**
