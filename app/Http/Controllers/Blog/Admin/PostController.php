@@ -152,7 +152,17 @@ class PostController extends BaseController
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
-    {
-        dd(__METHOD__, $id, request()->all());
+    {   
+        // софт-удаление. В базе остается
+        $result = BlogPost::destroy($id);
+
+        if ($result) {
+            return redirect()
+                ->route('blog.admin.posts.index')
+                ->with(['success' => "Record ID = [{$id}] successfuly deleted."]);
+        } else {
+            return back()
+                ->withErrors(['msg' => 'Error during deletion.']);
+        }
     }
 }

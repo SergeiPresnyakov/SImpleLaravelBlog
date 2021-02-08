@@ -60,11 +60,6 @@ class CategoryController extends BaseController
     public function store(BlogCategoryCreateRequest $request)
     {
         $data = $request->input();
-
-        // Ушло в observer
-        /* if (empty($data['slug'])) {
-            $data['slug'] = str_slug($data['title']);
-        } */
         
         $item = (new BlogCategory())->create($data);
 
@@ -89,6 +84,19 @@ class CategoryController extends BaseController
     public function edit($id)
     {
         $item = $this->blogCategoryRepository->getEdit($id);
+
+        $v['title_before'] = $item->title;
+        $item->title = "New test title 123";
+        $v['title_after'] = $item->title;
+        $v['getAttribute'] = $item->getAttribute('title');
+        $v['attributesToArray'] = $item->attributesToArray();
+        $v['attribs'] = $item->attributes;
+        $v['getAttributeValue'] = $item->getAttributeValue('title');
+        $v['getMutatedAttributes'] = $item->getMutatedAttributes();
+        $v['hasGetMutator for title'] = $item->hasGetMutator('title');
+        $v['toArray'] = $item->toArray();
+
+        dd($v, $item);
 
         if (empty($item)) {
             abort(404);
