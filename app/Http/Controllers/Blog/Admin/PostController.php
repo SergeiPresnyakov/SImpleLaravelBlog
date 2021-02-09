@@ -6,7 +6,8 @@ use App\Repositories\BlogCategoryRepository;
 use App\Repositories\BlogPostRepository;
 use App\Http\Requests\BlogPostUpdateRequest;
 use App\Http\Requests\BlogPostCreateRequest;
-use Illuminate\Http\Request;
+use App\Jobs\BlogPostAfterCreateJob;
+use App\Jobs\BlogPostAfterDeleteJob;
 use App\Models\BlogPost;
 
 /**
@@ -75,6 +76,9 @@ class PostController extends BaseController
         $item = (new BlogPost())->create($data);
         
         if ($item) {
+            $job = new BlogPostAfterCreateJob($item);
+            $this->dispatch($job);
+
             return redirect()
                 ->route('blog.admin.posts.edit', [$item->id])
                 ->with(['success' => 'Successfuly saved.']);
@@ -83,17 +87,6 @@ class PostController extends BaseController
                 ->withErrors(['msg' => 'Error during saving.'])
                 ->withInput();
         }
-    }
-    
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        dd(__METHOD__, $id, request()->all());
     }
 
     /**
@@ -157,6 +150,8 @@ class PostController extends BaseController
         $result = BlogPost::destroy($id);
 
         if ($result) {
+            BlogPostAfterDeleteJob::dispatch($id);
+
             return redirect()
                 ->route('blog.admin.posts.index')
                 ->with(['success' => "Record ID = [{$id}] successfuly deleted."]);
